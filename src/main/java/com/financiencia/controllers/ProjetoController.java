@@ -4,10 +4,9 @@ import com.financiencia.entities.Cidade;
 import com.financiencia.entities.Projeto;
 import com.financiencia.entities.Universidade;
 import com.financiencia.repositories.CidadeRepository;
-import com.financiencia.repositories.ProjetoRepository;
 import com.financiencia.repositories.UniversidadeRepository;
+import com.financiencia.service.ProjetoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,7 @@ import java.util.Optional;
 public class ProjetoController {
 
     @Autowired
-    private ProjetoRepository projetoRepository;
+    private ProjetoService projetoService;
 
     @Autowired
     private CidadeRepository cidadeRepository;
@@ -30,58 +29,44 @@ public class ProjetoController {
     private UniversidadeRepository universidadeRepository;
 
     @GetMapping("/listar")
-    public ResponseEntity<List<Projeto>> listarprojetos() {
-        List<Projeto> listagemProjetos = projetoRepository.findAll(Sort.by("id").ascending());
-        return ResponseEntity.ok().body(listagemProjetos);
+    public ResponseEntity<?> listarprojetos() {
+        try {
+            List<Projeto> projetos= projetoService.listarProjetos();
+            return ResponseEntity.ok().body(projetos);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao listar projetos!" + e);
+        }
     }
 
     @GetMapping("/visualizar/{id}")
-    public ResponseEntity<Optional<Projeto>> visualizarProjeto(@PathVariable Long id) {
-        Optional<Projeto> visualizarProjeto = projetoRepository.findById(id);
-        if (visualizarProjeto.isPresent()) {
-            return ResponseEntity.ok().body(visualizarProjeto);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> visualizarProjeto(@PathVariable Long id) {
+        try {
+            Projeto projetoId= projetoService.visualizarId(id);
+            return ResponseEntity.ok().body(projetoId);
+        } catch (Exception e) {
+            throw new RuntimeException("nenhum projeto encontrado com o ID informado!" + e);
         }
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Projeto>> buscarProjeto(@RequestParam String tituloProjeto) {
-        List<Projeto> buscarProjeto = projetoRepository.findBytituloProjetoContainingIgnoreCase(tituloProjeto);
-        if (!buscarProjeto.isEmpty()) {
-            return ResponseEntity.ok().body(buscarProjeto);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> buscarProjeto(@RequestParam String tituloProjeto) {
+        try {
+            List<Projeto> projetoTitulo= projetoService.buscarProjeto(tituloProjeto);
+            return ResponseEntity.ok().body(projetoTitulo);
+        } catch (Exception e) {
+            throw new RuntimeException("nenhum projeto encontrado com o título informado!" + e);
         }
+
     }
 
     @PostMapping("/novo")
     public ResponseEntity<?> novoProjeto(@RequestBody Projeto projeto) {
-        if (projeto.getTituloProjeto() == null || projeto.getTituloProjeto().isEmpty()) {
-            return ResponseEntity.badRequest().body("O título do projeto não pode ser nulo!");
-        } else if (projeto.getDescricaoProjeto() == null || projeto.getDescricaoProjeto().isEmpty()) {
-            return ResponseEntity.badRequest().body("A descrição do projeto não pode ser vazia!");
-        } else if (projeto.getAlunos() == null || projeto.getAlunos().isEmpty()) {
-            return ResponseEntity.badRequest().body("Ao menos um aluno deve ser designado para o projeto!");
-        } else if (projeto.getEmail() == null || projeto.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest().body("Informe o e-mail para contato");
-        } else if (projeto.getCidade() == null) {
-            return ResponseEntity.badRequest().body("Cidade Inválida");
-        } else if (projeto.getUniversidade() == null) {
-            return ResponseEntity.badRequest().body("Universidade Inválida");
-        }
 
-        Cidade cidade = cidadeRepository.findById(projeto.getCidade().getId())
-                .orElseThrow(() -> new RuntimeException("Cidade não encontrada"));
 
-        Universidade universidade = universidadeRepository.findById(projeto.getUniversidade().getId())
-                .orElseThrow(() -> new RuntimeException("Universidade não encontrada"));
 
-        projeto.setCidade(cidade);
-        projeto.setUniversidade(universidade);
 
-        Projeto projetoSalvo = projetoRepository.save(projeto);
-        return ResponseEntity.ok().body(projetoSalvo);
+
+
     }
 
     @PutMapping("/editar/{id}")

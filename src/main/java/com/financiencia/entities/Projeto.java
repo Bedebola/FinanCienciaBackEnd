@@ -11,17 +11,18 @@ public class Projeto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
+    @Column(nullable=false)
     private String tituloProjeto;
 
-    @Column
+    @Column(nullable=false)
     private String descricaoProjeto;
 
-    @Column
+    @Column(nullable=false)
     private String alunos;
 
-    @Column
+    @Column(nullable=false)
     private String email;
+
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "universidade", nullable = false)
