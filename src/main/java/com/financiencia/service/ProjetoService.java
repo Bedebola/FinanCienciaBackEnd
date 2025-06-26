@@ -74,27 +74,48 @@ public class ProjetoService {
 
         Universidade universidade = universidadeRepository.findById(projeto.getUniversidade().getId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Universidade não encontrada"));
-
     }
 
     public Projeto cadastrarProjeto (Projeto projeto){
 
+        validarProjeto(projeto);
 
         Cidade cidade = cidadeRepository.findById(projeto.getCidade().getId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Cidade não encontrada"));
 
         Universidade universidade = universidadeRepository.findById(projeto.getUniversidade().getId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Universidade não encontrada"));
-
-        projeto.setCidade(cidade);
-        projeto.setUniversidade(universidade);
+                .orElseThrow(()->new RecursoNaoEncontradoException("Universidade não encontrada"));
 
         Projeto projetoSalvo = projetoRepository.save(projeto);
         return projetoSalvo;
 
     }
 
+    public Projeto editarProjeto (Long id, Projeto projetoAtualizado){
 
+        Projeto projetoExistente = projetoRepository.findById(id)
+                        .orElseThrow(()->new RecursoNaoEncontradoException("projeto não encontrado!"));
+
+        validarProjeto(projetoAtualizado);
+
+        projetoExistente.setTituloProjeto(projetoAtualizado.getTituloProjeto());
+        projetoExistente.setDescricaoProjeto(projetoAtualizado.getDescricaoProjeto());
+        projetoExistente.setAlunos(projetoAtualizado.getAlunos());
+        projetoExistente.setEmail(projetoAtualizado.getEmail());
+        projetoExistente.setCidade(projetoAtualizado.getCidade());
+        projetoExistente.setUniversidade(projetoAtualizado.getUniversidade());
+
+        return projetoRepository.save(projetoExistente);
+    }
+
+    public void excluirProjeto (Long id){
+
+        Projeto projeto = projetoRepository.findById(id)
+                .orElseThrow(()->new RecursoNaoEncontradoException("Projeto não localizado"));
+
+        projetoRepository.delete(projeto);
+
+    }
 
 
 

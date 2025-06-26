@@ -62,51 +62,29 @@ public class ProjetoController {
     @PostMapping("/novo")
     public ResponseEntity<?> novoProjeto(@RequestBody Projeto projeto) {
 
-
-
-
-
-
+    try{
+        Projeto novoProjeto = projetoService.cadastrarProjeto(projeto);
+        return ResponseEntity.ok().body(novoProjeto);
+    }catch (Exception e){
+        throw new RuntimeException("não foi possível cadastrar o projeto!" + e);
+    }
     }
 
     @PutMapping("/editar/{id}")
-    public ResponseEntity<Optional<Projeto>> editarProjeto(@RequestBody Projeto projeto, @PathVariable Long id) {
-        Optional<Projeto> retorno = projetoRepository.findById(id).map(record -> {
-            if (projeto.getTituloProjeto() != null && !projeto.getTituloProjeto().isEmpty()) {
-                record.setTituloProjeto(projeto.getTituloProjeto());
-            }
-            if (projeto.getDescricaoProjeto() != null && !projeto.getDescricaoProjeto().isEmpty()) {
-                record.setDescricaoProjeto(projeto.getDescricaoProjeto());
-            }
-            if (projeto.getAlunos() != null && !projeto.getAlunos().isEmpty()) {
-                record.setAlunos(projeto.getAlunos());
-            }
-            if (projeto.getEmail() != null && !projeto.getEmail().isEmpty()) {
-                record.setEmail(projeto.getEmail());
-            }
-            if (projeto.getCidade() != null) {
-                Cidade cidade = cidadeRepository.findById(projeto.getCidade().getId())
-                        .orElseThrow(() -> new RuntimeException("Cidade não encontrada"));
-                record.setCidade(cidade);
-            }
-            if (projeto.getUniversidade() != null) {
-                Universidade universidade = universidadeRepository.findById(projeto.getUniversidade().getId())
-                        .orElseThrow(() -> new RuntimeException("Universidade não encontrada"));
-                record.setUniversidade(universidade);
-            }
-            return projetoRepository.save(record);
-        });
-        return ResponseEntity.ok().body(retorno);
+    public ResponseEntity<?> editarProjeto(@RequestBody Projeto projeto, @PathVariable Long id) {
+
+        try {
+            Projeto projetoEditado = projetoService.editarProjeto(id, projeto);
+            return ResponseEntity.ok().body(projetoEditado);
+        } catch (Exception e) {
+            throw new RuntimeException("não foi possível cadastrar o projeto!" + e);
+        }
     }
 
-    @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<?> deletarProjeto(@PathVariable Long id) {
-        return projetoRepository.findById(id)
-                .map(record -> {
-                    projetoRepository.deleteById(id);
-                    return ResponseEntity.ok().body("Projeto deletado com sucesso!");
-                })
-                .orElse(ResponseEntity.notFound().build());
+    @DeleteMapping("/excluir/{id}")
+    public ResponseEntity<Void> deletarProjeto(@PathVariable Long id) {
+        projetoService.excluirProjeto(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
