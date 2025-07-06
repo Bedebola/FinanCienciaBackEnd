@@ -2,13 +2,12 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/financiencia
     username: root
-    password:
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   seguranca:
       segredo: senha
-      tempo_validade: 5
-
+      tempo_validade: 360
   jpa:
     hibernate:
       ddl-auto: update

@@ -49,13 +49,14 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException ex){
+            System.err.println("Erro na validação do token: " + ex.getMessage());
             return null;
         }
     }
 
     private Instant generateExpirationDate(){
         return LocalDateTime.now().plusMinutes(expirationTime)
-                .toInstant(ZoneOffset.of("-03:00"));
+                .toInstant(ZoneOffset.of(String.valueOf(ZoneOffset.UTC)));
 }
 
 
