@@ -54,9 +54,9 @@ public class SecurityConfig {
 
                         // ---- NOVAS REGRAS PARA ADMIN ----
                         // Permite que apenas ADMINs criem, editem e excluam projetos
-                        .requestMatchers(HttpMethod.POST, "/projeto/novo").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/projeto/editar/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/projeto/excluir/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/projeto/novo").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/projeto/editar/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/projeto/excluir/**").authenticated()
 
                         // Mantém a regra para todas as outras requisições
                         .anyRequest().authenticated()

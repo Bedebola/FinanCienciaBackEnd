@@ -33,18 +33,13 @@ public class ProjetoController {
 
     @GetMapping("/listar")
     public ResponseEntity<?> listarprojetos(
-            // O Spring injeta automaticamente os parâmetros da URL (?page=X&size=Y&sort=Z)
-            // em um objeto Pageable.
-            // @PageableDefault define os valores padrão se o frontend não os enviar.
             @PageableDefault(size = 10, sort = "id") Pageable pageable) {
         try {
-            // Chama o serviço atualizado
+
             Page<Projeto> projetosPaginados = projetoService.listarProjetos(pageable);
-            // Retorna a página completa. O Spring/Jackson irá serializar isso
-            // para o JSON que o frontend espera (com "content", "totalPages", etc.)
+
             return ResponseEntity.ok().body(projetosPaginados);
         } catch (Exception e) {
-            // Mantive seu tratamento de erro, mas você pode querer ser mais específico
             return ResponseEntity.badRequest().body("Erro ao listar projetos! " + e.getMessage());
         }
     }
