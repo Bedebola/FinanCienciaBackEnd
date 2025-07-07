@@ -24,11 +24,11 @@ public class Projeto {
     private String email;
 
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = Universidade.class)
     @JoinColumn(name = "universidade", nullable = false)
     private Universidade universidade;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(targetEntity = Cidade.class)
     @JoinColumn(name = "cidade", nullable = false)
     private Cidade cidade;
 
