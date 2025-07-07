@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        // Endpoints públicos (sem alteração)
                         .requestMatchers(HttpMethod.POST, "/usuario/cadastrar").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/projeto/listar").permitAll()
@@ -50,6 +51,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/universidades/listar").permitAll()
                         .requestMatchers(HttpMethod.GET, "/projeto/visualizar/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/projeto/buscar/**").permitAll()
+
+                        // ---- NOVAS REGRAS PARA ADMIN ----
+                        // Permite que apenas ADMINs criem, editem e excluam projetos
+                        .requestMatchers(HttpMethod.POST, "/projeto/novo").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/projeto/editar/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/projeto/excluir/**").hasRole("ADMIN")
+
+                        // Mantém a regra para todas as outras requisições
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

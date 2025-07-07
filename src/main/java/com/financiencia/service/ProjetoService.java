@@ -9,6 +9,8 @@ import com.financiencia.repositories.CidadeRepository;
 import com.financiencia.repositories.ProjetoRepository;
 import com.financiencia.repositories.UniversidadeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +28,10 @@ public class ProjetoService {
     @Autowired
     private CidadeRepository cidadeRepository;
 
-    public List<Projeto> listarProjetos (){
-        List<Projeto> projetos = projetoRepository.findAll(Sort.by("id").ascending());
+    public Page<Projeto> listarProjetos (Pageable pageable){
+        // O método findAll do JpaRepository já entende Pageable.
+        // Ele automaticamente faz a consulta no banco com os limites (LIMIT) e deslocamentos (OFFSET) corretos.
+        Page<Projeto> projetos = projetoRepository.findAll(pageable);
 
         if (projetos.isEmpty()) {
             throw new RecursoNaoEncontradoException("Nada consta na lista de projetos!");
